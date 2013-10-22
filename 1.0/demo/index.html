@@ -1,0 +1,53 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <title>DelayActivator的demo</title>
+    <script src="http://g.tbcdn.cn/kissy/k/1.3.0/kissy.js" charset="utf-8"></script>
+    <link rel="stylesheet" href="http://g.tbcdn.cn/kissy/k/1.3.0/css/dpl/base-min.css">
+</head>
+<body>
+<h2>DelayActivator的demo</h2>
+
+<script>
+    var S = KISSY;
+    if (S.Config.debug) {
+        var srcPath = "../../../";
+        S.config({
+            packages:[
+                {
+                    name:"gallery",
+                    path:srcPath,
+                    charset:"utf-8",
+                    ignorePackageNameInUri:true
+                }
+            ]
+        });
+    }
+
+    S.use('gallery/DelayActivator/1.0/index', function (S, DelayActivator) {
+        var delay = new DelayActivator();
+
+        window.show = delay.activate(200)(function(ele) {
+            var pop = S.one('<div style="border:1px solid #F90;width:200px" class="pop" id="ele_' + S.one(ele).attr('data') + '">内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容' + S.one(ele).attr('data') + '</div>');
+            pop.appendTo(document.body);
+        });
+        window.hide = delay.deactivate(100)(function(ele) {
+            S.one('#ele_' + S.one(ele).attr('data')).remove();
+        });
+        S.one(document).delegate('mouseover', '.pop', function() {
+            delay.hold();
+        });
+        S.one(document).delegate('mouseout', '.pop', function() {
+            delay.release();
+        });
+    });
+</script>
+
+<img onmouseover="show(this)" onmouseleave="hide(this)" src="http://g.search2.alicdn.com/img/i2/1027099234/T2v_q0XhNbXXXXXXXX_!!1027099234.jpg_120x120.jpg" data="1" />
+<img onmouseover="show(this)" onmouseleave="hide(this)" src="http://g.search2.alicdn.com/img/i2/1048771310/T2ShhIXzRXXXXXXXXX_!!1048771310.jpg_120x120.jpg" data="2" />
+<img onmouseover="show(this)" onmouseleave="hide(this)" src="http://g.search.alicdn.com/img/i4/875336081/T2Y8tEXBFXXXXXXXXX_!!875336081.jpg_120x120.jpg" data="3" />
+<img onmouseover="show(this)" onmouseleave="hide(this)" src="http://g.search2.alicdn.com/img/i2/268538841/T2BmK_XgXbXXXXXXXX_!!268538841.jpg_120x120.jpg" data="4" />
+
+</body>
+</html>
