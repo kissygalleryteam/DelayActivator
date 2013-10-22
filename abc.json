@@ -1,7 +1,7 @@
 {
     "name": "DelayActivator",
     "version": "1.0",
-    "desc": "",
+    "desc": "制作延时开、关效果的基本库",
     "cover": "",
     "tag":"",
     "author": {
