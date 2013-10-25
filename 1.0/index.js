@@ -4,7 +4,7 @@
  * @module DelayActivator
  **/
 KISSY.add(function (S, oop) {
-
+    
     var DelayActivator = new oop.Class({
         __activation: null,
         __activations: {},
@@ -26,42 +26,52 @@ KISSY.add(function (S, oop) {
                 activation = {};
             }
             activation.active = func;
+
+            // 别的在开启中，不允许同时开启多个，停止它
+            if (self.__activation && self.__activation.activating) {
+                self.stopActive();
+            }
+
             self.__activation = activation;
 
             function active() {
                 activation.active();
-                activation.activeTimer = null;
-                if (self.enableActiveMode) {
-                    self.actived++;
-                }
+                activation.activating = false;
+                activation.actived = true;
+                self.actived++;
             }
 
-            if (activation.deactiveTimer) {
+            if (activation.deactivating) {
                 self.stopDeactive();
-            } else if (self.actived) {
+            } else if (self.enableActiveMode && self.actived) {
                 active();
             } else {
-                activation.activeTimer = setTimeout(active, self.activeWait);
+                activation.activating = setTimeout(active, self.activeWait);
             }
         },
         deactive: function(func) {
             var self = this;
 
             var activation = self.__activation;
+
+            // 没有开启的
+            if (!activation) {
+                return;
+            }
+
             activation.deactive = func;
 
             function deactive() {
                 activation.deactive();
-                activation.deactiveTimer = null;
-                if (self.enableActiveMode) {
-                    self.actived--;
-                }
+                activation.deactivating = false;
+                activation.actived = false;
+                self.actived--;
             }
 
-            if (activation.activeTimer) {
+            if (activation.activating) {
                 self.stopActive();
             } else if (self.deactiveWait) {
-                activation.deactiveTimer = setTimeout(deactive, self.deactiveWait);
+                activation.deactivating = setTimeout(deactive, self.deactiveWait);
             } else {
                 deactive();
             }
@@ -78,14 +88,14 @@ KISSY.add(function (S, oop) {
         stopActive: function() {
             var self = this;
             var activation = self.__activation;
-            clearTimeout(activation.activeTimer);
-            activation.activeTimer = null;
+            clearTimeout(activation.activating);
+            activation.activating = false;
         },
         stopDeactive: function() {
             var self = this;
             var activation = self.__activation;
-            clearTimeout(activation.deactiveTimer);
-            activation.deactiveTimer = null;
+            clearTimeout(activation.deactivating);
+            activation.deactivating = false;
         },
         activate: function(wait) {
             var self = this;
